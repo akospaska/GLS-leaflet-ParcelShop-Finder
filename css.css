@@ -1,8 +1,159 @@
-.popupDiv{
-  width:200px;
-  height:200px
+.popupDiv {
+  width: 200px;
+  height: 170px;
 }
 
-.openingTable tbody{
+.popupDiv {
+  font-size: 10px;
+}
+
+.openingTable tbody {
+  font-size: 10px;
+}
+
+.left-canvas {
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 12px;
+  overflow: hidden;
+  float: left;
+  width: 30%;
+  height: 400px;
+}
+
+#psitems-canvas {
+  overflow: auto;
+  width: 30%;
+  height: 100%;
+  width: 100%;
+}
+
+.stage {
+  /*display: flex;*/
+  height: 10px;
+  width: 50%;
+}
+.box {
+  align-self: flex-end;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+
+  height: 30px;
+  margin: 0 auto 0 auto;
+  transform-origin: bottom;
+  width: 30px;
+}
+
+.bounce-6 {
+  animation-name: bounce-6;
+
+  animation-timing-function: ease;
+}
+@keyframes bounce-6 {
+  0% {
+    transform: scale(1, 1) translateY(0);
+  }
+  10% {
+    transform: scale(1, 1) translateY(0);
+  }
+  30% {
+    transform: scale(1, 1) translateY(-50px);
+  }
+  50% {
+    transform: scale(1, 1) translateY(0);
+  }
+  57% {
+    transform: scale(1, 1) translateY(-7px);
+  }
+  64% {
+    transform: scale(1, 1) translateY(0);
+  }
+  100% {
+    transform: scale(1, 1) translateY(0);
+  }
+}
+/*bounce 2 */
+.animated {
+  background-image: url(/css/images/logo.png);
+  background-repeat: no-repeat;
+  background-position: left top;
+  /*
+  padding-top: 95px;
+  margin-bottom: 60px;
+  */
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+}
+
+@-webkit-keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    -webkit-transform: translateY(0);
+  }
+  40% {
+    -webkit-transform: translateY(-30px);
+  }
+  60% {
+    -webkit-transform: translateY(-15px);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-30px);
+  }
+  60% {
+    transform: translateY(-15px);
+  }
+}
+
+.bounce {
+  -webkit-animation-name: bounce;
+  animation-name: bounce;
+}
+
+.leaflet-div-icon.selected img {
+  -webkit-animation-name: bounce;
+  animation-name: bounce;
+  -webkit-animation-duration: 1.7s;
+  animation-duration: 1.7s;
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+}
+.leaflet-div-icon {
+  background: transparent;
+  border: none;
+}
+
+.ugralas {
+  -webkit-animation-name: bounce;
+  animation-name: bounce;
+  -webkit-animation-duration: 1.7s;
+  animation-duration: 1.7s;
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+}
+
+.testbutton {
+  background-color: aliceblue;
+}
+
+.sidebarItemSelected {
+  background-color: aliceblue;
+}
+.leaflet-popup {
+  margin-bottom: 2rem;
 }
