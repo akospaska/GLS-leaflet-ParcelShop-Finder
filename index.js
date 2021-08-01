@@ -122,14 +122,11 @@ const renderMarkers = () => {
         })
           .addTo(map)
           .bindPopup(getPopUpHtml(a.name, a.address, a.phone, a.pclshopid, a.geolat, a.geolng));
-        console.log({ lat: a.geolat, lng: a.geolng });
         sideBarItemListContainer.insertAdjacentHTML(
           'beforeend',
           getSidebarListElement(a.pclshopid, a.name, `${a.zipcode} ${a.city}`, a.address, { lat: a.geolat, lng: a.geolng })
         );
-        console.log('before the click event created');
         marker.on('click', (e) => {
-          console.log('I am triggered');
           selectedMarkerCoords.lat = e.target._latlng.lat;
           selectedMarkerCoords.lng = e.target._latlng.lng;
           map.setView(e.target.getLatLng(), map._zoom);
@@ -175,21 +172,17 @@ const renderMarkers = () => {
             }, 185);
           });
         });
-        console.log('after the click event created');
         return marker;
       });
     })
     .catch((error) => console.log('error', error));
 };
-console.log(document.querySelector('.leaflet-tile-pane'));
 const mapbdy = document.querySelector('.leaflet-tile-pane');
 
-mapbdy.addEventListener('click', () => {
-  console.log('mpbody clicked');
-});
+mapbdy.addEventListener('click', () => {});
 map.on('click', (e) => {
   map.closePopup();
-  console.log('mapbody clicked');
+
   const fakeImages = document.querySelector('.ugralas');
   fakeImages?.classList.remove('ugralas');
   const fakeImages2 = document.querySelector('.ugralas');
@@ -250,13 +243,12 @@ const sidebarListItemClick = (e) => {
 
   map.setView([Number(e.target.dataset.lat), Number(e.target.dataset.lng)], 15);
   const mapContainer = document.querySelector('.leaflet-marker-pane');
-
+  console.log(e.target.dataset.id);
   const tempelement = document.getElementById(`${e.target.dataset.id}`);
+  console.log(tempelement);
   const divIcon = tempelement.closest('.leaflet-marker-icon');
-  console.log(divIcon);
 
   divIcon.click();
-  console.log('divicon clicked');
 };
 renderMarkers();
 /* const some = getOpening('1011-ALPHAZOOKF');
@@ -300,3 +292,61 @@ const testBtn = document.querySelector('#testbutton');
 testBtn.addEventListener('click', (e) => {
   console.log(e.target);
 });
+const searchInputField = document.getElementById('searchinput');
+
+// Init a timeout variable to be used below
+
+// Listen for keystroke events
+// Init a timeout variable to be used below
+var timefired = null; // Listen for keystroke events
+searchInputField.onkeyup = function (event) {
+  console.log();
+  clearTimeout(timefired);
+  timefired = setTimeout(function (search) {
+    var myHeaders = new Headers();
+    myHeaders.append('Cookie', 'PHPSESSID=65suvckvf8m8ol088rohc5cjt5; SRV_ID=02');
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      redirect: 'follow',
+    };
+    fetch('https://online.gls-hungary.com/psmap/psmap_getdata.php?ctrcode=HU&action=getList&dropoff=1', requestOptions)
+      .then((response) => response.text())
+      .then((result) => {
+        sideBarItemListContainer.textContent = '';
+        const apiRequestResult = JSON.parse(result);
+
+        let findResult = [];
+        apiRequestResult.map((a) => {
+          const address = `${a.address.toLowerCase()} `;
+          const city = `${a.city.toLowerCase()} `;
+          const name = `${a.name.toLowerCase()} `;
+          const zipcode = `${a.zipcode.toLowerCase()}`;
+          const mergedSearchArea = address.concat(city, name, zipcode);
+          if (mergedSearchArea.includes(`${event.target.value}`) && event.target.value.length >= 3) {
+            findResult.push(a);
+          }
+        });
+        console.log(findResult);
+        findResult.map((a) => {
+          sideBarItemListContainer.insertAdjacentHTML(
+            'beforeend',
+            getSidebarListElement(a.pclshopid, a.name, `${a.zipcode} ${a.city}`, a.address, { lat: a.geolat, lng: a.geolng })
+          );
+        });
+
+        const firstElementResult = document.querySelector('.sidebarListItem');
+      })
+      .catch((error) => console.log('error', error));
+  }, 600);
+};
+
+/*
+sideBarItemListContainer.textcontent=""
+ sideBarItemListContainer.insertAdjacentHTML(
+          'beforeend',
+          getSidebarListElement(a.pclshopid, a.name, `${a.zipcode} ${a.city}`, a.address, { lat: a.geolat, lng: a.geolng })
+        );
+
+*/
