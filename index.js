@@ -1,228 +1,229 @@
+'use strict';
 console.log('hello world');
 
 const sideBarItemListContainer = document.querySelector('#psitems-canvas');
-
-const getSidebarListElement = (pclshopid, name, city, address, coords) => {
-  return `<div data-id="${pclshopid}" data-lat="${coords.lat}" data-lng="${coords.lng}" class="sidebarListItem" style="padding: 10px; cursor: pointer" class="" onmouseover="sidebarListItemMouseEnter(event)" onmouseleave="sidebarListItemMouseLeave(event)" onclick="sidebarListItemClick(event)">
-            ${name}<br>${city}<br>${address}
-          </div>`;
-};
-
-let selectedMarkerCoords = { lat: 0, lng: 0 };
-
-//const selectedMarkerCoords2 = { lat: 47.0241, lng: 19.5602 };
-
-/* var greenIcon = L.icon({
-  iconUrl: 'gls-marker.svg',
-
-  iconSize: [50, 95], // size of the icon
-  shadowSize: [50, 64], // size of the shadow
-  iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-  shadowAnchor: [4, 62], // the same for the shadow
-  popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
-}); */
-const tryy = { lat: 47.0241, lng: 19.5602 };
-//{ lat: a.geolat, lng: a.geolng }
-const getMarkerIcon = (coords, pclshopid) => {
-  const isTheCoordsIsTheSelectedMarker = coords.lat == selectedMarkerCoords.lat && coords.lng == selectedMarkerCoords.lng ? true : false;
-  const htmlClassName = isTheCoordsIsTheSelectedMarker ? 'ugralas' : '';
-
-  var markerIcon = L.divIcon({
-    iconSize: [50, 50], // size of the icon
-
-    iconAnchor: [22, 40], // point of the icon which will correspond to marker's location
-    html: `<img src="gls-marker.svg" width="62" height="50" class="${htmlClassName}" id="${pclshopid}" >`,
-  });
-  return markerIcon;
-};
-
-var greenIcon = L.divIcon({
-  iconSize: [50, 50], // size of the icon
-
-  iconAnchor: [22, 40], // point of the icon which will correspond to marker's location
-  html: `<img src="gls-marker.svg" width="62" height="50" class="ugralas" >`,
-});
-
-const getPopUpHtml = (name, address, phone, id, lat, lng) => {
-  const popUpHtml = `<div class="popupDiv" id="${id}" data-lat="${lat}" data-lng="${lng}">
-  <div class="popUpName">${name}</div>
-  <div class="popUpAddress">${address}</div>
-  <div class="popUpPhone">${phone}</div>
-  <div class="openingTable">
-    <table>
-  <thead>Nyitvatartás</thead>
-  <tbody>
-
-    
-  </tbody>
-</table>
-  </div>
-  </div>`;
-
-  return popUpHtml;
-};
-
-//_targets
-//_lastCenter
+const parentElement = document.querySelector('.leaflet-marker-pane');
+const searchInputField = document.getElementById('searchinput');
+const ajaxResultTextContent = document.querySelector('#ajaxresult');
 
 var map = L.map('map').setView([47.02133, 19.56171], 13);
-
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 }).addTo(map);
 
-// .openPopup();
+let MainMap;
 
-//  var marker = L.marker([51.505, -0.19]).addTo(map);
+const mapmap = document.querySelector('.leaflet-map-pane');
+console.log(mapmap);
+//class component
 
-const renderMarkers = () => {
-  /*  const parentElement = document.querySelector('.leaflet-marker-pane');
-  const childElements = parentElement.querySelectorAll('.selected');
-  console.log(childElements[0]);
-  parentElement.innerHTML = '';
+class pclshopFinder {
+  constructor(pclshopArrayData) {
+    this.selectedMarkerCoords = { lat: 0, lng: 0 };
+    this.mainPclshopData = pclshopArrayData;
+    this.activeIcon;
+    this.activeIconID;
+    this.actualMapCoords;
+    this.activeListItem = false;
+  }
 
-  parentElement.innerHTML = childElements[0]; */
-  //parentElement.insertAdjacentHTML('beforeend', childElements[0]);
+  tryMeFunction(say) {
+    console.log(this.mainPclshopData);
+  }
 
-  const parentElement = document.querySelector('.leaflet-marker-pane');
-  const tempchilds = parentElement.querySelectorAll('.selected');
-  const childElements = Array.from(tempchilds);
-  parentElement.innerHTML = '';
-
-  var myHeaders = new Headers();
-  myHeaders.append('Cookie', 'PHPSESSID=65suvckvf8m8ol088rohc5cjt5; SRV_ID=02');
-
-  var requestOptions = {
-    method: 'POST',
-    headers: myHeaders,
-    redirect: 'follow',
-  };
-  fetch('https://online.gls-hungary.com/psmap/psmap_getdata.php?ctrcode=HU&action=getList&dropoff=1', requestOptions)
-    .then((response) => response.text())
-    .then((result) => {
-      let resultArray = JSON.parse(result);
-
-      let mapCorners = map.getBounds();
-
-      const xxxx = resultArray.find((a) => a.geolat === '47.5062' && a.geolng === '19.038');
-      const xxxx2 = resultArray.filter(
-        (a) =>
-          a.geolat >= mapCorners._southWest.lat &&
-          a.geolat <= mapCorners._northEast.lat &&
-          a.geolng >= mapCorners._southWest.lng &&
-          a.geolng <= mapCorners._northEast.lng
-      );
-      sideBarItemListContainer.innerHTML = '';
-      xxxx2.map((a) => {
-        // var myIcon2 = L.divIcon({ className: 'animated bounce' });
-        let marker = L.marker([a.geolat, a.geolng], {
-          alt: `${a.pclshopid}`,
-          icon: getMarkerIcon({ lat: a.geolat, lng: a.geolng }, a.pclshopid),
-          className: `${a.geolat}-${a.geolng}`,
-        })
-          .addTo(map)
-          .bindPopup(getPopUpHtml(a.name, a.address, a.phone, a.pclshopid, a.geolat, a.geolng));
-        sideBarItemListContainer.insertAdjacentHTML(
-          'beforeend',
-          getSidebarListElement(a.pclshopid, a.name, `${a.zipcode} ${a.city}`, a.address, { lat: a.geolat, lng: a.geolng })
-        );
-        marker.on('click', (e) => {
-          selectedMarkerCoords.lat = e.target._latlng.lat;
-          selectedMarkerCoords.lng = e.target._latlng.lng;
-          map.setView(e.target.getLatLng(), map._zoom);
-
-          //  e.target._icon.classList.add('selected');
-
-          /*
-          var wrapper = document.createElement('div');
-          wrapper.classList.add('box');
-          wrapper.classList.add('bounce-6');
-          var myDiv = e.target._icon;
-          wrapper.appendChild(myDiv.cloneNode(true));
-          myDiv.parentNode.replaceChild(wrapper, myDiv);
-
-          var wrapper2 = document.createElement('div');
-          wrapper2.classList.add('stage');
-
-          var myDiv2 = document.querySelector('.box');
-
-          wrapper2.appendChild(myDiv2.cloneNode(true));
-          myDiv2.parentNode.replaceChild(wrapper2, myDiv2);
-
-          e.target._icon.classList.add('box');
-          e.target._icon.classList.add('bounce-6');
-*/
-          // getOpening(marker.options.alt);
-          const some = getOpening(marker.options.alt);
-
-          some.then((a) => {
-            setTimeout(() => {
-              const openingBody = document.querySelector('.leaflet-popup-content-wrapper')?.querySelector('tbody');
-
-              const openingResult = [...JSON.parse(a)];
-
-              const renderOpening = () => {
-                openingResult.map((a, b) => {
-                  const getTrElement = (day, time) => `<tr><td>${day}</td><td>${time}</td></tr>`;
-
-                  openingBody?.insertAdjacentHTML('beforeend', getTrElement(a.day, a.open));
-                });
-              };
-              renderOpening();
-            }, 185);
-          });
-        });
-        return marker;
+  renderMarkers() {
+    const pclShopData = this.mainPclshopData;
+    pclShopData.map((a) => {
+      let marker = L.marker([a.geolat, a.geolng], {
+        alt: `${a.pclshopid}`,
+        icon: this.getMarkerIcon({ lat: a.geolat, lng: a.geolng }, a.pclshopid),
+        className: `${a.geolat}-${a.geolng}`,
+      })
+        .addTo(map)
+        .bindPopup(this.getPopUpHtml(a.name, a.address, a.phone, a.pclshopid, a.geolat, a.geolng));
+      ///////////////////////////////////////
+      marker.on('click', (e) => {
+        this.markerClickEvent(e, marker);
       });
-    })
-    .catch((error) => console.log('error', error));
-};
-const mapbdy = document.querySelector('.leaflet-tile-pane');
 
-mapbdy.addEventListener('click', () => {});
-map.on('click', (e) => {
-  map.closePopup();
+      ///////////////////////////////////
+    });
+  }
+  getOpeningTableElement(day, time) {
+    return `<tr><td>${day}</td><td>${time}</td></tr>`;
+  }
+  renderOpeningPopUp(openingsData) {
+    const openingBody = document.querySelector('.leaflet-popup-content-wrapper')?.querySelector('tbody');
+    openingsData.map((a, b) => {
+      openingBody?.insertAdjacentHTML('beforeend', this.getOpeningTableElement(a.day, a.open));
+    });
+  }
+  setOrClearBounceAnimation(element) {
+    element.className === 'ugralas' ? element.classList.remove('ugralas') : element.classList.add('ugralas');
+  }
 
-  const fakeImages = document.querySelector('.ugralas');
-  fakeImages?.classList.remove('ugralas');
-  const fakeImages2 = document.querySelector('.ugralas');
-  fakeImages2?.classList.remove('ugralas');
-  selectedMarkerCoords = { lat: 0, lng: 0 };
+  markerClickEvent(e, marker) {
+    MainMap.revealTheSelectedPclshopID(marker.options.alt);
+    const markerImg = e.target._icon.querySelector('img');
+    if (markerImg !== this.activeIcon) {
+      this.activeIcon?.classList.remove('ugralas');
+      markerImg.classList.add('ugralas');
+    }
 
-  /*
-  const mainMapStage = document.querySelectorAll('.stage');
+    this.activeIcon = markerImg;
 
-  const node = document.querySelector('.box');
-  console.log(node.childNodes);
-  node.replaceWith(...node.childNodes);
-  const node2 = e.target._container;
+    //this.setOrClearBounceAnimation(markerImg);
+    this.selectedMarkerCoords = e.target.getLatLng();
+    map.setView(this.selectedMarkerCoords, map._zoom);
 
-  mainMapStage[1].replaceWith(...mainMapStage[1].childNodes);
+    const selectedMarkerOpenings = this.getOpening(marker.options.alt);
 
-  //bounceElement.classList.remove('box','bounce-6')*/
-});
+    selectedMarkerOpenings.then((a) => {
+      setTimeout(() => {
+        const openingResult = [...JSON.parse(a)];
 
-const getOpening = async (pclshopid) => {
-  var myHeaders = new Headers();
-  myHeaders.append('Cookie', 'PHPSESSID=osuubidgos1fo73c961cdo3ov1; SRV_ID=01');
-  var raw = '';
-  var requestOptions = {
-    method: 'POST',
-    headers: myHeaders,
-    body: raw,
-    redirect: 'follow',
+        this.renderOpeningPopUp(openingResult);
+      }, 185);
+    });
+  }
+
+  getPopUpHtml(name, address, phone, id, lat, lng) {
+    const popUpHtml = `<div class="popupDiv" id="${id}" data-lat="${lat}" data-lng="${lng}">
+    <div class="popUpName">${name}</div><div class="popUpAddress">${address}</div><div class="popUpPhone">${phone}</div><div class="openingTable"><table><thead>Nyitvatartás</thead><tbody></tbody></table></div></div>`;
+    return popUpHtml;
+  }
+  getSidebarListElement = (pclshopid, name, city, address, coords, isItSelected) => {
+    console.log(isItSelected);
+    return `<div data-id="${pclshopid}" data-lat="${coords.lat}" data-lng="${coords.lng}" class="sidebarListItem ${
+      isItSelected ? 'sidebarItemSelected' : ''
+    }" style="padding: 10px; cursor: pointer" class="" onmouseover="sidebarListItemMouseEnter(event)" onmouseleave="sidebarListItemMouseLeave(event)" onclick="sidebarListItemClick(event)">
+              ${name}<br>${city}<br>${address}
+            </div>`;
   };
-  const rest = await fetch(`https://online.gls-hungary.com/psmap/psmap_getdata.php?action=getOpenings&pclshopid=${pclshopid}`, requestOptions)
-    .then((response) => response.text())
-    .then((result) => result)
-    .catch((error) => console.log('error', error));
+  getMarkerIcon(coords, pclshopid) {
+    /*
+    const isTheCoordsIsTheSelectedMarker = coords.lat == selectedMarkerCoords.lat && coords.lng == selectedMarkerCoords.lng ? true : false;
+    const htmlClassName = isTheCoordsIsTheSelectedMarker ? 'ugralas' : '';*/
 
-  return rest;
+    const markerIcon = L.divIcon({
+      iconSize: [10, 10], // size of the icon
+
+      iconAnchor: [22, 40], // point of the icon which will correspond to marker's location
+      html: `<img src="gls-marker.svg" width="62" height="50" class="" id="${pclshopid}" >`,
+    });
+    return markerIcon;
+  }
+
+  renderListItems = (findResultArray) => {
+    findResultArray.map((a) => {
+      console.log(a.pclshopid);
+      console.log(MainMap.activeListItem.dataset?.id);
+
+      let isItActive = a.pclshopid == MainMap.activeListItem.dataset?.id ? true : false;
+      sideBarItemListContainer.insertAdjacentHTML(
+        'beforeend',
+        MainMap.getSidebarListElement(a.pclshopid, a.name, `${a.zipcode} ${a.city}`, a.address, { lat: a.geolat, lng: a.geolng }, isItActive)
+      );
+    });
+  };
+
+  getActualShowedMarkers() {
+    let mapCorners = map.getBounds();
+
+    let actualShowedCorners = this.mainPclshopData.filter(
+      (a) =>
+        a.geolat >= mapCorners._southWest.lat &&
+        a.geolat <= mapCorners._northEast.lat &&
+        a.geolng >= mapCorners._southWest.lng &&
+        a.geolng <= mapCorners._northEast.lng
+    );
+    console.log(actualShowedCorners);
+    return actualShowedCorners;
+  }
+
+  async getOpening(pclshopid) {
+    const rest = await fetch(`https://online.gls-hungary.com/psmap/psmap_getdata.php?action=getOpenings&pclshopid=${pclshopid}`, { method: 'POST' })
+      .then((response) => response.text())
+      .then((result) => result)
+      .catch((error) => console.log('error', error));
+
+    return rest;
+  }
+  removeAllBounceEffect(event) {
+    event.target._container.querySelector('.ugralas')?.classList.remove('ugralas');
+  }
+  extendsPclShopDataArray() {
+    let indexNumber = 0;
+    for (const property in map._layers) {
+      let x = map._layers[property];
+      if (x._latlng) {
+        // console.log(this.mainPclshopData[indexNumber]._icon);
+        this.mainPclshopData[indexNumber].leafletId = x._leaflet_id;
+        this.mainPclshopData[indexNumber].latlng = x._latlng;
+        this.mainPclshopData[indexNumber].imgIcon = x._icon.querySelector('img');
+
+        indexNumber++;
+      }
+    }
+  }
+
+  revealTheSelectedPclshopID(pclshopId) {
+    ajaxResultTextContent.textContent = pclshopId;
+  }
+}
+
+//class component ends
+
+//get the plcShopData and create the main class
+
+fetch('https://online.gls-hungary.com/psmap/psmap_getdata.php?ctrcode=HU&action=getList&dropoff=1', { method: 'POST' })
+  .then((response) => response.text())
+  .then((result) => {
+    MainMap = new pclshopFinder(JSON.parse(result));
+    MainMap.renderMarkers();
+    MainMap.extendsPclShopDataArray();
+  });
+
+//get the plcShopData and create the main class
+
+//set all of the functions after the map loaded
+var timefired = null;
+
+window.onload = async () => {
+  map.on('moveend', function (e) {
+    clearTimeout(timefired);
+    timefired = setTimeout(function (search) {
+      sideBarItemListContainer.textContent = '';
+      console.log('map is moved');
+
+      MainMap.renderListItems(MainMap.getActualShowedMarkers());
+    }, 300);
+  });
+  map.on('click', (event) => {
+    MainMap.removeAllBounceEffect(event);
+    MainMap.activeIcon = null;
+  });
+  searchInputField.onkeyup = function (event) {
+    clearTimeout(timefired);
+    timefired = setTimeout(function (search) {
+      let findResult = [];
+      MainMap.mainPclshopData.map((a) => {
+        const address = `${a.address.toLowerCase()} `;
+        const city = `${a.city.toLowerCase()} `;
+        const name = `${a.name.toLowerCase()} `;
+        const zipcode = `${a.zipcode.toLowerCase()}`;
+        const mergedSearchArea = address.concat(city, name, zipcode);
+        if (mergedSearchArea.includes(`${event.target.value}`) && event.target.value.length >= 3) {
+          findResult.push(a);
+        }
+      });
+      sideBarItemListContainer.textContent = '';
+      MainMap.renderListItems(findResult);
+    }, 300);
+  };
+
+  console.log('All map event had been declared');
 };
-
-map.on('moveend', function (e) {
-  renderMarkers();
-});
 
 const sidebarListItemMouseEnter = (e) => {
   if (e.target.className != 'sidebarListItem sidebarItemSelected') {
@@ -235,118 +236,85 @@ const sidebarListItemMouseLeave = (e) => {
     e.target.className = 'sidebarListItem';
   }
 };
+
 const sidebarListItemClick = (e) => {
-  map.closePopup();
-  mapbdy.click();
-
-  e.target.className = 'sidebarListItem sidebarItemSelected';
-
-  map.setView([Number(e.target.dataset.lat), Number(e.target.dataset.lng)], 15);
-  const mapContainer = document.querySelector('.leaflet-marker-pane');
+  mapmap.click();
   console.log(e.target.dataset.id);
+  let x = MainMap.mainPclshopData.find((a) => a.pclshopid === e.target.dataset.id);
+  console.log(x.imgIcon);
+
+  if (MainMap.activeListItem !== e.target && MainMap.activeListItem.className) {
+    MainMap.activeListItem.className = 'sidebarListItem';
+  }
+
+  MainMap.activeListItem = e.target;
+  MainMap.activeListItem.className = `sidebarListItem sidebarItemSelected`;
+
+  //map.setView([Number(e.target.dataset.lat), Number(e.target.dataset.lng)], 15);
   const tempelement = document.getElementById(`${e.target.dataset.id}`);
-  console.log(tempelement);
+
   const divIcon = tempelement.closest('.leaflet-marker-icon');
 
-  divIcon.click();
+  x.imgIcon.click();
+  //divIcon.click();
 };
-renderMarkers();
-/* const some = getOpening('1011-ALPHAZOOKF');
-
-some.then((a) => console.log([JSON.parse(a)])); */
-
-// console.log((<any>e.layer).getLatLngs()); // polyline
-// console.log((<any>e.layer).getLatLng()); // circle
-// mind the s at the end of the function...
+//getUserData
 
 /*
+ async getUserData() {
+    const pos = await new Promise((resolve, reject) => {
+      console.log(reject);
+      navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
+    if (pos.coords) {
+      return {
+        long: pos.coords.longitude,
+        lat: pos.coords.latitude,
+      };
+    }
+  }
 
 
-                        var myHeaders = new Headers();
-                    myHeaders.append("Cookie", "PHPSESSID=osuubidgos1fo73c961cdo3ov1; SRV_ID=01");
-                    var raw = "";
-                    var requestOptions = {
-                      method: 'POST',
-                      headers: myHeaders,
-                      body: raw,
-                      redirect: 'follow'
-                    };
-                    fetch("https://online.gls-hungary.com/psmap/psmap_getdata.php?action=getOpenings&pclshopid=6050-NOGROUPGRP02", requestOptions)
-                      .then(response => response.text())
-                      .then(result => console.log(result))
-                      .catch(error => console.log('error', error));
 
-
-  */
-
-//  baselayerchange
-
-// define rectangle geographical bounds
-/*       var offset = map.latLngToContainerPoint([40.02133,  19.56171]);
-      console.log(offset); */
-
-const markerClickEvent = (e) => {};
-
-const testBtn = document.querySelector('#testbutton');
-
-testBtn.addEventListener('click', (e) => {
-  console.log(e.target);
-});
-const searchInputField = document.getElementById('searchinput');
-
-// Init a timeout variable to be used below
-
-// Listen for keystroke events
-// Init a timeout variable to be used below
-var timefired = null; // Listen for keystroke events
-searchInputField.onkeyup = function (event) {
-  console.log();
-  clearTimeout(timefired);
-  timefired = setTimeout(function (search) {
-    var myHeaders = new Headers();
-    myHeaders.append('Cookie', 'PHPSESSID=65suvckvf8m8ol088rohc5cjt5; SRV_ID=02');
-
-    var requestOptions = {
-      method: 'POST',
-      headers: myHeaders,
-      redirect: 'follow',
-    };
-    fetch('https://online.gls-hungary.com/psmap/psmap_getdata.php?ctrcode=HU&action=getList&dropoff=1', requestOptions)
-      .then((response) => response.text())
-      .then((result) => {
-        sideBarItemListContainer.textContent = '';
-        const apiRequestResult = JSON.parse(result);
-
-        let findResult = [];
-        apiRequestResult.map((a) => {
-          const address = `${a.address.toLowerCase()} `;
-          const city = `${a.city.toLowerCase()} `;
-          const name = `${a.name.toLowerCase()} `;
-          const zipcode = `${a.zipcode.toLowerCase()}`;
-          const mergedSearchArea = address.concat(city, name, zipcode);
-          if (mergedSearchArea.includes(`${event.target.value}`) && event.target.value.length >= 3) {
-            findResult.push(a);
-          }
-        });
-        console.log(findResult);
-        findResult.map((a) => {
-          sideBarItemListContainer.insertAdjacentHTML(
-            'beforeend',
-            getSidebarListElement(a.pclshopid, a.name, `${a.zipcode} ${a.city}`, a.address, { lat: a.geolat, lng: a.geolng })
-          );
-        });
-
-        const firstElementResult = document.querySelector('.sidebarListItem');
-      })
-      .catch((error) => console.log('error', error));
-  }, 600);
+  window.onload = async () => {
+  const coords = await MainMap.getUserData();
+  console.log(coords);
+  setMapStarterLoadPosition(coords.lat, coords.long);
+  map.on('moveend', function (e) {
+    console.log('I am mooving');
+  });
 };
 
-/*
-sideBarItemListContainer.textcontent=""
- sideBarItemListContainer.insertAdjacentHTML(
-          'beforeend',
-          getSidebarListElement(a.pclshopid, a.name, `${a.zipcode} ${a.city}`, a.address, { lat: a.geolat, lng: a.geolng })
-        );
+const setMapStarterLoadPosition = (lat, lng) => {
+  console.log(lat, lng);
+  map = L.map("map").setView([lat, lng], 13);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  }).addTo(map);
+};
 
+
+
+    //  e.target._icon.classList.add('selected');
+
+    /*
+    var wrapper = document.createElement('div');
+    wrapper.classList.add('box');
+    wrapper.classList.add('bounce-6');
+    var myDiv = e.target._icon;
+    wrapper.appendChild(myDiv.cloneNode(true));
+    myDiv.parentNode.replaceChild(wrapper, myDiv);
+
+    var wrapper2 = document.createElement('div');
+    wrapper2.classList.add('stage');
+
+    var myDiv2 = document.querySelector('.box');
+
+    wrapper2.appendChild(myDiv2.cloneNode(true));
+    myDiv2.parentNode.replaceChild(wrapper2, myDiv2);
+
+    e.target._icon.classList.add('box');
+    e.target._icon.classList.add('bounce-6');
 */
+// getOpening(marker.options.alt);
