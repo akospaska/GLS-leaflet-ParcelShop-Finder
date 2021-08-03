@@ -14,7 +14,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 let MainMap;
 
 const mapmap = document.querySelector('.leaflet-map-pane');
-console.log(mapmap);
+
 //class component
 
 class pclshopFinder {
@@ -64,20 +64,23 @@ class pclshopFinder {
 
   markerClickEvent(e, marker) {
     MainMap.revealTheSelectedPclshopID(marker.options.alt);
-    const markerImg = e.target._icon.querySelector('img');
-    if (markerImg !== this.activeIcon) {
-      this.activeIcon?.classList.remove('ugralas');
-      markerImg.classList.add('ugralas');
+
+    let clickedImgElement = e.target._icon.querySelector('img');
+
+    //after the first load
+    if (this.activeIcon == undefined) {
+      clickedImgElement.classList.add('ugralas');
+      this.activeIcon = clickedImgElement;
+    } else if (this.activeIcon !== clickedImgElement) {
+      this.activeIcon.classList.remove('ugralas');
+      clickedImgElement.classList.add('ugralas');
+
+      this.activeIcon = clickedImgElement;
     }
 
-    this.activeIcon = markerImg;
-
-    //this.setOrClearBounceAnimation(markerImg);
     this.selectedMarkerCoords = e.target.getLatLng();
     map.setView(this.selectedMarkerCoords, map._zoom);
-
     const selectedMarkerOpenings = this.getOpening(marker.options.alt);
-
     selectedMarkerOpenings.then((a) => {
       setTimeout(() => {
         const openingResult = [...JSON.parse(a)];
@@ -93,7 +96,6 @@ class pclshopFinder {
     return popUpHtml;
   }
   getSidebarListElement = (pclshopid, name, city, address, coords, isItSelected) => {
-    console.log(isItSelected);
     return `<div data-id="${pclshopid}" data-lat="${coords.lat}" data-lng="${coords.lng}" class="sidebarListItem ${
       isItSelected ? 'sidebarItemSelected' : ''
     }" style="padding: 10px; cursor: pointer" class="" onmouseover="sidebarListItemMouseEnter(event)" onmouseleave="sidebarListItemMouseLeave(event)" onclick="sidebarListItemClick(event)">
@@ -116,9 +118,6 @@ class pclshopFinder {
 
   renderListItems = (findResultArray) => {
     findResultArray.map((a) => {
-      console.log(a.pclshopid);
-      console.log(MainMap.activeListItem.dataset?.id);
-
       let isItActive = a.pclshopid == MainMap.activeListItem.dataset?.id ? true : false;
       sideBarItemListContainer.insertAdjacentHTML(
         'beforeend',
@@ -130,15 +129,15 @@ class pclshopFinder {
   getActualShowedMarkers() {
     let mapCorners = map.getBounds();
 
-    let actualShowedCorners = this.mainPclshopData.filter(
+    let showedPclshops = this.mainPclshopData.filter(
       (a) =>
         a.geolat >= mapCorners._southWest.lat &&
         a.geolat <= mapCorners._northEast.lat &&
         a.geolng >= mapCorners._southWest.lng &&
         a.geolng <= mapCorners._northEast.lng
     );
-    console.log(actualShowedCorners);
-    return actualShowedCorners;
+    console.log(showedPclshops);
+    return showedPclshops;
   }
 
   async getOpening(pclshopid) {
@@ -155,12 +154,12 @@ class pclshopFinder {
   extendsPclShopDataArray() {
     let indexNumber = 0;
     for (const property in map._layers) {
-      let x = map._layers[property];
-      if (x._latlng) {
+      let leafletMarker = map._layers[property];
+      if (leafletMarker._latlng) {
         // console.log(this.mainPclshopData[indexNumber]._icon);
-        this.mainPclshopData[indexNumber].leafletId = x._leaflet_id;
-        this.mainPclshopData[indexNumber].latlng = x._latlng;
-        this.mainPclshopData[indexNumber].imgIcon = x._icon.querySelector('img');
+        this.mainPclshopData[indexNumber].leafletId = leafletMarker._leaflet_id;
+        this.mainPclshopData[indexNumber].latlng = leafletMarker._latlng;
+        this.mainPclshopData[indexNumber].imgIcon = leafletMarker._icon.querySelector('img');
 
         indexNumber++;
       }
@@ -182,6 +181,7 @@ fetch('https://online.gls-hungary.com/psmap/psmap_getdata.php?ctrcode=HU&action=
     MainMap = new pclshopFinder(JSON.parse(result));
     MainMap.renderMarkers();
     MainMap.extendsPclShopDataArray();
+    // MainMap.renderListItems()
   });
 
 //get the plcShopData and create the main class
@@ -200,6 +200,8 @@ window.onload = async () => {
     }, 300);
   });
   map.on('click', (event) => {
+    console.log('MainMapActiveIcon is null');
+    console.log(this.activeIcon);
     MainMap.removeAllBounceEffect(event);
     MainMap.activeIcon = null;
   });
@@ -238,11 +240,34 @@ const sidebarListItemMouseLeave = (e) => {
 };
 
 const sidebarListItemClick = (e) => {
-  mapmap.click();
-  console.log(e.target.dataset.id);
+  map.closePopup();
+  if (MainMap.activeIcon) {
+    MainMap.activeIcon.classList.remove('ugralas');
+  }
+  MainMap.revealTheSelectedPclshopID(e.target.dataset.id);
   let x = MainMap.mainPclshopData.find((a) => a.pclshopid === e.target.dataset.id);
-  console.log(x.imgIcon);
 
+  for (const property in map._layers) {
+    let leafletMarker = map._layers[property];
+    if (leafletMarker.options.alt === e.target.dataset.id) {
+      const markerImg = leafletMarker._icon.querySelector('img');
+      if (markerImg !== this.activeIcon) {
+        this.activeIcon?.classList.remove('ugralas');
+        markerImg.classList.add('ugralas');
+      }
+
+      MainMap.activeIcon = markerImg;
+      console.log('_The actual active icon');
+
+      console.log(MainMap.activeIcon);
+
+      //leafletMarker.openPopUp();
+      //  leafletMarker._icon.click();
+    }
+  }
+  map.setView([x.latlng.lat, x.latlng.lng]);
+
+  //togglePopup()
   if (MainMap.activeListItem !== e.target && MainMap.activeListItem.className) {
     MainMap.activeListItem.className = 'sidebarListItem';
   }
@@ -250,12 +275,12 @@ const sidebarListItemClick = (e) => {
   MainMap.activeListItem = e.target;
   MainMap.activeListItem.className = `sidebarListItem sidebarItemSelected`;
 
-  //map.setView([Number(e.target.dataset.lat), Number(e.target.dataset.lng)], 15);
+  map.setView([Number(e.target.dataset.lat), Number(e.target.dataset.lng)], 15);
   const tempelement = document.getElementById(`${e.target.dataset.id}`);
 
   const divIcon = tempelement.closest('.leaflet-marker-icon');
 
-  x.imgIcon.click();
+  //x.imgIcon.click();
   //divIcon.click();
 };
 //getUserData
