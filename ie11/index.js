@@ -154,19 +154,6 @@ $(function () {
     },
   });
 });
-/* fetch(
-  `https://online.gls-${urlOptions[scriptLoadOptions.country].urlName}.${urlOptions[scriptLoadOptions.country].tld}/psmap/psmap_getdata.php?ctrcode=${
-    urlOptions[scriptLoadOptions.country].language
-  }&action=getList&dropoff=1`
-)
-  .then((response) => response.text())
-  .then((result) => {
-    Formatter = new formatter();
-    MainMap = new pclshopFinder(JSON.parse(result));
-    MainMap.renderMarkers();
-    MainMap.extendsPclShopDataArray();
-    MainMap.renderListItems(MainMap.getActualShowedMarkers(), searchInputField.value);
-  }); */
 
 window.onload = function () {
   map.on('moveend', function (e) {
@@ -174,14 +161,14 @@ window.onload = function () {
     MainMap.renderListItems(MainMap.getActualShowedMarkers(), searchInputField.value);
   });
   map.on('click', function (event) {
-    selectedPclshopID.textContent = '';
+    MainMap.selectedParcelShop = '';
     Formatter.removeAllBounceEffect(event);
     MainMap.activeIcon = null;
     MainMap.renderListItems(MainMap.getActualShowedMarkers(), searchInputField.value);
     MainMap.revealTheSelectedPclshopID('');
-    MainMap.selectedParcelShop = null;
-  }); //timefired is needed for the searchInputDelay
+  });
 
+  //timefired is needed for the searchInputDelay
   var timefired = null;
 
   searchInputField.onkeyup = function (event) {
@@ -296,6 +283,7 @@ var pclshopFinder = /*#__PURE__*/ (function () {
     this.activeIconID;
     this.actualMapCoords;
     this.activeListItem = false;
+    this.selectedParcelShop = '';
   }
 
   _createClass(pclshopFinder, [
@@ -334,66 +322,30 @@ var pclshopFinder = /*#__PURE__*/ (function () {
       key: 'getOpeningData',
       ////////////////
 
-      value:
-        /*   var return_first = (function () {
-      var tmp = null;
-      $.ajax({
-      
-        type: 'get',
-        global: false,
-     
-        url: `https://online.gls-${urlOptions[scriptLoadOptions.country].urlName}.${urlOptions[scriptLoadOptions.country].tld}/psmap/psmap_getdata.php?ctrcode=${
-          urlOptions[scriptLoadOptions.country].language
-        }&action=getList&dropoff=1`,
-        data: { request: '', target: 'arrange_url', method: 'method_target' },
-        success: function (data) {
-          tmp = data;
-        },
-      });
-      return tmp;
-    })();
-    console.log(JSON.parse(return_first)); */
-        //1065-CSOMAGPONT
-        ////////////////////////
-        function getOpeningData(pclshopid) {
-          /*  const apiResult = fetch(
-        `https://online.gls-${urlOptions[scriptLoadOptions.country].urlName}.${
-          urlOptions[scriptLoadOptions.country].tld
-        }/psmap/psmap_getdata.php?action=getOpenings&pclshopid=${pclshopid}`,
-        { method: 'POST' }
-      )
-        .then((response) => response.text())
-        .then((result) => {
-          return result;
-        })
-        .catch((error) => console.log('error', error));
-      console.log(apiResult);
-        return apiResult; */
-          /////////
-          /////////
-          var tokens = null;
+      value: function getOpeningData(pclshopid) {
+        var tokens = null;
 
-          function getData() {
-            return $.ajax({
-              type: 'GET',
-              url: 'https://online.gls-'
-                .concat(urlOptions[scriptLoadOptions.country].urlName, '.')
-                .concat(urlOptions[scriptLoadOptions.country].tld, '/psmap/psmap_getdata.php?action=getOpenings&pclshopid=')
-                .concat(pclshopid),
-              async: false,
-              error: function error(XMLHttpRequest, textStatus, errorThrown) {
-                alert('Request: ');
-              },
-              success: function success(result) {
-                tokens = JSON.parse(result);
-              },
-            }).responseText;
-          }
+        function getData() {
+          return $.ajax({
+            type: 'GET',
+            url: 'https://online.gls-'
+              .concat(urlOptions[scriptLoadOptions.country].urlName, '.')
+              .concat(urlOptions[scriptLoadOptions.country].tld, '/psmap/psmap_getdata.php?action=getOpenings&pclshopid=')
+              .concat(pclshopid),
+            async: false,
+            error: function error(XMLHttpRequest, textStatus, errorThrown) {
+              alert('Request: ');
+            },
+            success: function success(result) {
+              tokens = JSON.parse(result);
+            },
+          }).responseText;
+        }
 
-          var res = JSON.parse(getData());
+        var res = JSON.parse(getData());
 
-          return res;
-        },
+        return res;
+      },
     },
     {
       key: 'renderListItems',
@@ -525,6 +477,7 @@ var pclshopFinder = /*#__PURE__*/ (function () {
   return pclshopFinder;
 })(); ///////// ParcelShopFinder class//////////
 //////////////////////////////////////////
+
 /////////////////////////////////////////
 ///////// extra formatter class//////////
 

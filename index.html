@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://myfirstwebapp-siwvh.run-eu-central1.goorm.io/apirequests/pclshopfindercss" type="text/css" />
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script defer src="/ie11/index.js"></script>
+    <script defer src="/es2021/index.js"></script>
 
     <style type="text/css">
       #map {
@@ -58,8 +58,10 @@
           console.log(data);
 
           //Optional///////////////////////////////////////
-          selectedPclshopID.textContent = data.pclshopid;
+          selectedPclshopID.textContent = MainMap.selectedParcelShop.pclshopid;
           //Optional///////////////////////////////////////
+        } else {
+          selectedPclshopID.textContent = MainMap.selectedParcelShop;
         }
       });
     </script>

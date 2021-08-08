@@ -4,7 +4,6 @@ console.log('Hello world!');
 //declare the static html elements
 const sideBarItemListContainer = document.querySelector('#psitems-canvas');
 const searchInputField = document.getElementById('searchinput');
-const ajaxResultTextContent = document.querySelector('#ajaxresult');
 const selectedPclshopID = document.querySelector('#ajaxresult');
 
 //set the global urlOptions
@@ -58,12 +57,10 @@ window.onload = () => {
 
   //Remove the bouncing marker / effect set the global MainIcon class variable / render the Left sideBard with results
   map.on('click', (event) => {
+    MainMap.selectedParcelShop = '';
     Formatter.removeAllBounceEffect(event);
     MainMap.activeIcon = null;
     MainMap.renderListItems(MainMap.getActualShowedMarkers(), searchInputField.value);
-
-    MainMap.selectedParcelShop = null;
-    selectedPclshopID.textContent = '';
   });
 
   //timefired is needed for the searchInputDelay
@@ -231,7 +228,7 @@ class pclshopFinder {
     return `<tr><td>${day}</td><td>${time}</td></tr>`;
   }
 
-  //get the opening interval through an api request and returns an array with the find result.
+  //get the opening time interval through an api request and returns an array with the find result.
   getAsyncOpeningData(pclshopid) {
     var tokens = null;
     function getData() {
@@ -280,7 +277,8 @@ class pclshopFinder {
     });
     sideBarItemListContainer.scrollTo(0, 0);
   }
-  //returns the left sidebar html element based on the set arguments
+
+  //returns one the left sidebar html element based on the set arguments
   #getSidebarListElement(pclshopid, name, city, address, coords, isItSelected) {
     return `<div data-id="${pclshopid}" data-lat="${coords.lat}" data-lng="${coords.lng}" class="sidebarListItem ${
       isItSelected ? 'sidebarItemSelected' : ''
