@@ -210,7 +210,9 @@ var sidebarListItemClick = function sidebarListItemClick(event) {
   map.closePopup();
 
   if (MainMap.activeIcon) {
-    MainMap.activeIcon.classList.remove('markerBouncing');
+    if (MainMap.activeIcon.id !== event.target.dataset.id) {
+      MainMap.activeIcon.classList.remove('markerBouncing');
+    }
   }
 
   MainMap.revealTheSelectedPclshopID(event.target.dataset.id); //find refactor
@@ -507,6 +509,10 @@ function _getPopUpHtml2(name, address, phone, id, lat, lng) {
 }
 
 function _renderOpeningPopUp2(openingsData) {
+  const openedPopUp = document.querySelector('.leaflet-popup');
+  if (document.querySelectorAll('.leaflet-popup').length == 2) {
+    openedPopUp.parentNode.removeChild(openedPopUp);
+  }
   var _document$querySelect,
     _this4 = this;
 
@@ -555,11 +561,9 @@ function _markerClickEvent2(event, marker) {
   map.setView(this.selectedMarkerCoords, scriptLoadOptions.focusZoomLevel);
   var selectedMarkerOpenings = this.getOpeningData(marker.options.alt); //marker.options.alt = pclshopUnique ID
 
-  setTimeout(function () {
-    var openingResult = selectedMarkerOpenings;
+  var openingResult = selectedMarkerOpenings;
 
-    _classPrivateMethodGet(_this5, _renderOpeningPopUp, _renderOpeningPopUp2).call(_this5, openingResult);
-  }, 185);
+  _classPrivateMethodGet(_this5, _renderOpeningPopUp, _renderOpeningPopUp2).call(_this5, openingResult);
 }
 
 var formatter = /*#__PURE__*/ (function () {

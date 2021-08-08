@@ -5,12 +5,13 @@
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
     <script defer src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script defer src="https://unpkg.com/browse/leaflet.markercluster@1.4.1/dist/"></script>
 
     <link rel="stylesheet" href="//online.gls-hungary.com/psmap/default.css" type="text/css" />
     <link rel="stylesheet" href="https://myfirstwebapp-siwvh.run-eu-central1.goorm.io/apirequests/pclshopfindercss" type="text/css" />
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script defer src="/es2021/index.js"></script>
+    <script defer src="https://myfirstwebapp-siwvh.run-eu-central1.goorm.io/apirequests/pclshopfinderjs"></script>
 
     <style type="text/css">
       #map {
@@ -22,7 +23,7 @@
     </style>
   </head>
   <body>
-    <!--The DIV element ov the plugin-->
+    <!--The DIV element of the plugin-->
     <div class="canvas">
       <div class="left-canvas">
         <input id="searchinput" type="text" class="default" />
@@ -30,10 +31,14 @@
       </div>
       <div id="map" class="stage"></div>
     </div>
+
+    <!-- //Optional//////////// Just for live demo-->
     <br />
     <div style="font-size: larger">The selected ParcelShop:</div>
     <br />
     <div style="font-size: larger" id="ajaxresult">Selected item comes here</div>
+    <!-- //Optional//////////// Just for live demo-->
+
     <!--The DIV element ov the plugin-->
 
     <script>
@@ -57,11 +62,14 @@
           //Data what you should care.
           console.log(data);
 
-          //Optional///////////////////////////////////////
+          //Optional//////////// Just for live demo
           selectedPclshopID.textContent = MainMap.selectedParcelShop.pclshopid;
-          //Optional///////////////////////////////////////
+          //Optional//////////// Just for live demo
         } else {
-          selectedPclshopID.textContent = MainMap.selectedParcelShop;
+          //Optional//////////// Just for live demo
+
+          selectedPclshopID.textContent = MainMap.selectedParcelShop.pclshopid;
+          //Optional//////////// Just for live demo
         }
       });
     </script>

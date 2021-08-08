@@ -208,6 +208,11 @@ class pclshopFinder {
 
   //render the openingPopUp
   #renderOpeningPopUp(openingsData) {
+    const openedPopUp = document.querySelector('.leaflet-popup');
+    if (document.querySelectorAll('.leaflet-popup').length == 2) {
+      openedPopUp.remove();
+    }
+    //openedPopUp.remove();
     let finalOpeningData = Formatter.orderOpeningDays(openingsData);
 
     const openingBody = document.querySelector('.leaflet-popup-content-wrapper')?.querySelector('tbody');
@@ -228,7 +233,6 @@ class pclshopFinder {
     return `<tr><td>${day}</td><td>${time}</td></tr>`;
   }
 
-  //get the opening time interval through an api request and returns an array with the find result.
   getAsyncOpeningData(pclshopid) {
     var tokens = null;
     function getData() {
@@ -305,10 +309,7 @@ class pclshopFinder {
     this.selectedMarkerCoords = event.target.getLatLng();
     map.setView(this.selectedMarkerCoords, scriptLoadOptions.focusZoomLevel);
 
-    //had to manually delay because the popup reveals in a bit delay.
-    setTimeout(() => {
-      this.#renderOpeningPopUp(this.getAsyncOpeningData(marker.options.alt));
-    }, 225);
+    this.#renderOpeningPopUp(this.getAsyncOpeningData(marker.options.alt));
   }
 
   //extends the parcelshopObjects with more values  like:values for the search / district / marker's leaflet_id / marker's img element / marker's latlng.
