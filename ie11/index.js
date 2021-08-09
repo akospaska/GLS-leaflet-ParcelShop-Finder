@@ -66,21 +66,6 @@ var searchInputField = document.getElementById('searchinput');
 
 var tokens = null;
 
-function getData() {
-  return $.ajax({
-    type: 'GET',
-    url: 'https://online.gls-hungary.com/psmap/psmap_getdata.php?action=getOpenings&pclshopid=1051-CSOMAGPONT01',
-    async: false,
-    error: function error(XMLHttpRequest, textStatus, errorThrown) {
-      alert('Request: ');
-    },
-    success: function success(result) {
-      tokens = JSON.parse(result);
-    },
-  }).responseText;
-}
-
-var res = JSON.parse(getData());
 /////////////////////////////////////////////////////////////////////////////
 
 var urlOptions = {
@@ -143,7 +128,7 @@ $(function () {
     url: 'https://online.gls-'
       .concat(urlOptions[scriptLoadOptions.country].urlName, '.')
       .concat(urlOptions[scriptLoadOptions.country].tld, '/psmap/psmap_getdata.php?ctrcode=')
-      .concat(urlOptions[scriptLoadOptions.country].language, '&action=getList&dropoff=1'),
+      .concat(urlOptions[scriptLoadOptions.country].language, '&action=getList&dropoff=1&pclshopin=1&parcellockin=1'),
     success: function success(data) {
       var result = JSON.parse(data);
       Formatter = new formatter();
@@ -484,14 +469,14 @@ var pclshopFinder = /*#__PURE__*/ (function () {
 ///////// extra formatter class//////////
 
 function _getMarkerIcon2(pclshopid, isParcelLocker) {
-  var parcelLockerSrc = '//online.gls-hungary.com/img/icon_parcellocker_hu.png';
+  var parcelLockerSrc = '//online.gls-hungary.com/img/icon_parcellocker_hu.png "width="62" height="30" class="';
   var parcelShopSrc = '//online.gls-hungary.com/img/icon_paketshop50x38_'.concat(scriptLoadOptions.uiLanguage.toLowerCase() == 'hu' ? 'hu' : 'en', '.png');
   var markerIcon = L.divIcon({
     iconSize: [10, 10],
     // size of the icon
     iconAnchor: [22, 40],
     // point of the icon which will correspond to marker's location
-    html: '<img src="'.concat(isParcelLocker === 't' ? parcelLockerSrc : parcelShopSrc, '" width="62" height="50" class="" id="').concat(pclshopid, '" >'),
+    html: '<img src="'.concat(isParcelLocker === 't' ? parcelLockerSrc : parcelShopSrc, '" width="62" height="45" class="" id="').concat(pclshopid, '" >'),
   });
   return markerIcon;
 }
@@ -503,7 +488,7 @@ function _getPopUpHtml2(name, address, phone, id, lat, lng) {
     .concat(lng, '">\n    <div class="popUpName">')
     .concat(name, '</div><div class="popUpAddress">')
     .concat(address, '</div><div class="popUpPhone">')
-    .concat(phone, '</div><div class="openingTable"><table><thead>')
+    .concat(phone == null ? '' : phone, '</div><div class="openingTable"><table><thead>')
     .concat(Formatter.translateOpeningSource[scriptLoadOptions.uiLanguage].opening, '</thead><tbody></tbody></table></div></div>');
   return popUpHtml;
 }

@@ -8,18 +8,51 @@ const selectedPclshopID = document.querySelector('#ajaxresult');
 
 //set the global urlOptions
 const urlOptions = {
-  HU: { urlName: 'hungary', tld: 'com', language: 'HU', startingCoords: [47.49801, 19.03991] },
-  RO: { urlName: 'romania', tld: 'ro', language: 'RO', startingCoords: [44.439663, 26.096306] },
-  SI: { urlName: 'slovenia', tld: 'com', language: 'SI', startingCoords: [46.05108, 14.50513] },
-  SK: { urlName: 'slovakia', tld: 'sk', language: 'SK', startingCoords: [48.14816, 17.10674] },
-  HR: { urlName: 'croatia', tld: 'com', language: 'HR', startingCoords: [45.81444, 15.97798] },
-  CZ: { urlName: 'czech', tld: 'com', language: 'CZ', startingCoords: [50.08804, 14.42076] },
+  HU: {
+    urlName: 'hungary',
+    tld: 'com',
+    language: 'HU',
+    startingCoords: [47.49801, 19.03991],
+  },
+  RO: {
+    urlName: 'romania',
+    tld: 'ro',
+    language: 'RO',
+    startingCoords: [44.439663, 26.096306],
+  },
+  SI: {
+    urlName: 'slovenia',
+    tld: 'com',
+    language: 'SI',
+    startingCoords: [46.05108, 14.50513],
+  },
+  SK: {
+    urlName: 'slovakia',
+    tld: 'sk',
+    language: 'SK',
+    startingCoords: [48.14816, 17.10674],
+  },
+  HR: {
+    urlName: 'croatia',
+    tld: 'com',
+    language: 'HR',
+    startingCoords: [45.81444, 15.97798],
+  },
+  CZ: {
+    urlName: 'czech',
+    tld: 'com',
+    language: 'CZ',
+    startingCoords: [50.08804, 14.42076],
+  },
 };
 
 //create and set the Leaflet map
 const map = L.map(
   'map',
-  { minZoom: scriptLoadOptions.minMaxZoomLevel.min, maxZoom: scriptLoadOptions.minMaxZoomLevel.max } /*, { minZoom: 7, maxZoom: 13 }*/
+  {
+    minZoom: scriptLoadOptions.minMaxZoomLevel.min,
+    maxZoom: scriptLoadOptions.minMaxZoomLevel.max,
+  } /*, { minZoom: 7, maxZoom: 13 }*/
 ).setView(
   scriptLoadOptions.startingCoords == null ? urlOptions[scriptLoadOptions.country].startingCoords : scriptLoadOptions.startingCoords,
   scriptLoadOptions.startingDefaultZoomLevel
@@ -36,7 +69,7 @@ let Formatter;
 fetch(
   `https://online.gls-${urlOptions[scriptLoadOptions.country].urlName}.${urlOptions[scriptLoadOptions.country].tld}/psmap/psmap_getdata.php?ctrcode=${
     urlOptions[scriptLoadOptions.country].language
-  }&action=getList&dropoff=1`
+  }&action=getList&dropoff=1&pclshopin=1&parcellockin=1`
 )
   .then((response) => response.text())
   .then((result) => {
@@ -187,12 +220,17 @@ class pclshopFinder {
 
   //get the marker IMG icon with options
   #getMarkerIcon(pclshopid, isParcelLocker) {
-    let parcelLockerSrc = `//online.gls-hungary.com/img/icon_parcellocker_hu.png`;
-    let parcelShopSrc = `//online.gls-hungary.com/img/icon_paketshop50x38_${scriptLoadOptions.uiLanguage.toLowerCase() == 'hu' ? 'hu' : 'en'}.png`;
+    if (isParcelLocker) {
+      console.log(pclshopid);
+    }
+    let parcelLockerSrc = `//online.gls-hungary.com/img/icon_parcellocker_hu.png "width="62" height="30" class=""`;
+    let parcelShopSrc = `//online.gls-hungary.com/img/icon_paketshop50x38_${
+      scriptLoadOptions.uiLanguage.toLowerCase() == 'hu' ? 'hu' : 'en'
+    }.png " width="62" height="45" class=""`;
     const markerIcon = L.divIcon({
       iconSize: [10, 10], // size of the icon
       iconAnchor: [22, 40], // point of the icon which will correspond to marker's location
-      html: `<img src="${isParcelLocker === 't' ? parcelLockerSrc : parcelShopSrc}" width="62" height="50" class="" id="${pclshopid}" >`,
+      html: `<img src="${isParcelLocker === 't' ? parcelLockerSrc : parcelShopSrc} id="${pclshopid}" >`,
     });
     return markerIcon;
   }
@@ -200,7 +238,9 @@ class pclshopFinder {
   //get the popupHtml element based on the arguments
   #getPopUpHtml(name, address, phone, id, lat, lng) {
     const popUpHtml = `<div class="popupDiv" id="${id}" data-lat="${lat}" data-lng="${lng}">
-    <div class="popUpName">${name}</div><div class="popUpAddress">${address}</div><div class="popUpPhone">${phone}</div><div class="openingTable"><table><thead>${
+    <div class="popUpName">${name}</div><div class="popUpAddress">${address}</div><div class="popUpPhone">${
+      phone == null ? '' : phone
+    }</div><div class="openingTable"><table><thead>${
       Formatter.translateOpeningSource[scriptLoadOptions.uiLanguage].opening
     }</thead><tbody></tbody></table></div></div>`;
     return popUpHtml;
@@ -443,7 +483,15 @@ class formatter {
   //Somehow the openingDays comes in unordered. This function makes in order
   orderOpeningDays(openingData) {
     let openingDays = openingData;
-    let sourceObj = { 0: 'monday', 1: 'tuesday', 2: 'wednesday', 3: 'thursday', 4: 'friday', 5: 'saturday', 6: 'sunday' };
+    let sourceObj = {
+      0: 'monday',
+      1: 'tuesday',
+      2: 'wednesday',
+      3: 'thursday',
+      4: 'friday',
+      5: 'saturday',
+      6: 'sunday',
+    };
 
     let orderedOpeningDays = [];
 

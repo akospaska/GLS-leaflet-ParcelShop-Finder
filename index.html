@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://myfirstwebapp-siwvh.run-eu-central1.goorm.io/apirequests/pclshopfindercss" type="text/css" />
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!--  <script defer src="/es2021/index.js"></script> -->
     <script defer src="https://myfirstwebapp-siwvh.run-eu-central1.goorm.io/apirequests/pclshopfinderjs"></script>
 
     <style type="text/css">
@@ -68,7 +69,12 @@
         } else {
           //Optional//////////// Just for live demo
 
-          selectedPclshopID.textContent = MainMap.selectedParcelShop.pclshopid;
+          if (MainMap.selectedParcelShop) {
+            selectedPclshopID.textContent = MainMap.selectedParcelShop.pclshopid;
+          } else {
+            selectedPclshopID.textContent = '';
+          }
+
           //Optional//////////// Just for live demo
         }
       });
