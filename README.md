@@ -117,7 +117,7 @@ You can easily download the sample html code through this link: https://myfirstw
 
 ## Code:
 
-The main code has been written in **_ES2021_**. Howewer the targeted browsers ends with **_Internet explorer 11_**.
+The main code has been written in **_ES2021_**. However the targeted browsers ends with **_Internet explorer 11_**.
 
 The default Javascript code that is linked into the sample html file is a **_transpiled code_** from the original.
 
