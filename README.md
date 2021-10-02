@@ -6,7 +6,7 @@
 
 ## Please first go through the documentation.
 ### You can find the documentation between the files, named: GLS parcelshop finder.pdf
-![alt text](https://image.ibb.co/g0SdPw/Screenshot_from_2018_01_05_11_14_40.png)
+![alt text](https://myfirstwebapp-siwvh.run-eu-central1.goorm.io//apirequests/pssdocumentjpg)
 ## Description
 ### Used for searching, displaying and selecting parcelshops on webpage of GLS customer. it is a Javascript based on Leaflet Map.
 
