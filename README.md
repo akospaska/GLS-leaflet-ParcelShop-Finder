@@ -46,7 +46,7 @@ To implement this plugin you will need a DIV with FIX size, for example:
 
 ## Div element:
 
-![alt text](https://myfirstwebapp-siwvh.run-eu-central1.goorm.io/apirequests/pssmapscriptjpg)
+![alt text](https://myfirstwebapp-siwvh.run-eu-central1.goorm.io/images/pssmapscript.jpg)
 
 
 ---
