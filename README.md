@@ -6,7 +6,7 @@
 
 ## Please first go through the documentation.
 ### You can find the documentation between the files, named: GLS parcelshop finder.pdf
-![alt text](https://myfirstwebapp-siwvh.run-eu-central1.goorm.io/images/pclshopdoc.jpg)
+![alt text](https://referenceprojects-abkno.run-eu-central1.goorm.io/src/github/leafletglsmap/pssdocument.jpg)
 ## Description
 ### Used for searching, displaying and selecting parcelshops on webpage of GLS customer. it is a Javascript based on Leaflet Map.
 
@@ -24,8 +24,8 @@
 
 ## Necessary scripts:
 
-- GLS css: https://myfirstwebapp-siwvh.run-eu-central1.goorm.io/apirequests/pclshopfindercss
-- GLS plugin: https://myfirstwebapp-siwvh.run-eu-central1.goorm.io/apirequests/pclshopfinderjs
+- GLS css: https://referenceprojects-abkno.run-eu-central1.goorm.io/assets/map/pclshopfindercss
+- GLS plugin: https://referenceprojects-abkno.run-eu-central1.goorm.io/assets/map/pclshopfinderjs
 - jQuery: https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js
 - Leaflet Css: https://unpkg.com/leaflet@1.6.0/dist/leaflet.css
 - Leaflet JS: https://unpkg.com/leaflet@1.6.0/dist/leaflet.js
@@ -46,7 +46,7 @@ To implement this plugin you will need a DIV with FIX size, for example:
 
 ## Div element:
 
-![alt text](https://myfirstwebapp-siwvh.run-eu-central1.goorm.io/images/pssmapscript.jpg)
+![alt text](https://referenceprojects-abkno.run-eu-central1.goorm.io/src/github/leafletglsmap/pssmapscript.jpg)
 
 
 ---
@@ -109,9 +109,9 @@ The MainMap.activeIconID stores the actually selected ParcelshopID too.
 
 ## Sample source code:
 
-You can easily download the sample html code through this link: https://myfirstwebapp-siwvh.run-eu-central1.goorm.io/apirequests/pclshopsamplehtmlcode
+You can easily download the sample html code through this link: https://referenceprojects-abkno.run-eu-central1.goorm.io/src/github/leafletglsmap/leafletgls.txt
 
-## Live demo: https://myfirstwebapp-siwvh.run-eu-central1.goorm.io/leafletpclshopfinder
+## Live demo: https://referenceprojects-abkno.run-eu-central1.goorm.io/github/demo/leafletgls
 
 ---
 
@@ -123,7 +123,7 @@ The default Javascript code that is linked into the sample html file is a **_tra
 
 That means the plugin with standard settings runs easily on Internet explorer 11 too.
 
-You can get the modern version of the code from this link: https://myfirstwebapp-siwvh.run-eu-central1.goorm.io/apirequests/glsparcelshopfindermodern
+You can get the modern version of the code from this link: https://referenceprojects-abkno.run-eu-central1.goorm.io/src/github/leafletglsmap/es2020leafletgls.js
 
 ### Please feel free to use and modify.
 
